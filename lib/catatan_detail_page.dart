@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kelompok3/edit_page.dart';
 
 class CatatanDetailPage extends StatefulWidget {
   const CatatanDetailPage({super.key});
@@ -19,7 +20,14 @@ class _CatatanDetailPageState extends State<CatatanDetailPage> {
         actions: [
           IconButton(
             onPressed: () {
-              debugPrint('Actions');
+              // debugPrint('Actions');
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) {
+                    return const EditPage();
+                  },
+                ),
+              );
             },
             icon: const Icon(
               Icons.edit,
@@ -133,7 +141,9 @@ class _CatatanDetailPageState extends State<CatatanDetailPage> {
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 20)),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                showAlertDialog(context);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[400],
                 padding: const EdgeInsets.all(12),
@@ -148,4 +158,39 @@ class _CatatanDetailPageState extends State<CatatanDetailPage> {
       ),
     );
   }
+}
+
+showAlertDialog(BuildContext context) {
+  // set up the buttons
+  Widget cancelButton = TextButton(
+    child: const Text("Batal"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  Widget continueButton = TextButton(
+    child: const Text(
+      "Hapus",
+      style: TextStyle(color: Colors.red),
+    ),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: const Text("Hapus Catatan"),
+    content: const Text("Hapus catatan ini?"),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }
