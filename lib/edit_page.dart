@@ -1,22 +1,38 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class EditPage extends StatefulWidget {
-  const EditPage({super.key});
+  const EditPage({super.key, required this.data});
+  final DocumentSnapshot data;
 
   @override
   State<EditPage> createState() => _EditPageState();
 }
 
 class _EditPageState extends State<EditPage> {
-  bool isSwitch = false;
-  bool? isCheckbox = false;
+  // TextEditingController jenisController = TextEditingController();
+  String jenisCatatan = "Pemasukkan";
+  TextEditingController judulController = TextEditingController();
+  TextEditingController nominalController = TextEditingController();
+  TextEditingController deskripsiController = TextEditingController();
   TextEditingController dateInput = TextEditingController();
 
   @override
   void initState() {
-    dateInput.text = ""; // value awal dari text field
+    dateInput.text = widget.data['tanggal'].toString();
+    jenisCatatan = widget.data['jenis'];
+    judulController.text = widget.data['judul'];
+    nominalController.text = widget.data['nominal'].toString();
+    deskripsiController.text = widget.data['deskripsi'];
+    // value awal dari text field
     super.initState();
+  }
+
+  void aturJenis(String jenis) {
+    setState(() {
+      jenisCatatan = jenis;
+    });
   }
 
   @override
@@ -32,7 +48,7 @@ class _EditPageState extends State<EditPage> {
           width: double.infinity,
           child: Column(
             children: [
-              const DropdownJenisCatatan(),
+              DropdownJenisCatatan(aturJenis: aturJenis),
               TextField(
                 controller: dateInput,
                 // mengedit controller dari TextField ini
@@ -50,12 +66,10 @@ class _EditPageState extends State<EditPage> {
                       lastDate: DateTime(2100));
 
                   if (pickedDate != null) {
-                    print(
-                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-
+                    //pickedDate output format => 2021-03-10 00:00:00.000
                     String formattedDate =
-                        DateFormat('dd-MM-yyyy').format(pickedDate);
-                    print(formattedDate);
+                        DateFormat("EEEE, d MMMM yyyy", "id_ID")
+                            .format(pickedDate);
                     setState(() {
                       dateInput.text =
                           formattedDate; // meng-set nya ke TextField value
@@ -64,17 +78,26 @@ class _EditPageState extends State<EditPage> {
                 },
               ),
               const Padding(padding: EdgeInsets.all(10)),
-              const TextField(
-                // obscureText: true,
-                decoration: InputDecoration(
+              TextField(
+                controller: judulController,
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Judul',
                 ),
               ),
               const Padding(padding: EdgeInsets.all(10)),
-              const TextField(
-                // obscureText: true,
-                decoration: InputDecoration(
+              TextField(
+                controller: nominalController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Nominal',
+                ),
+              ),
+              const Padding(padding: EdgeInsets.all(10)),
+              TextField(
+                controller: deskripsiController,
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Deskripsi',
                 ),
@@ -82,11 +105,37 @@ class _EditPageState extends State<EditPage> {
               ),
               const Padding(padding: EdgeInsets.all(10)),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final String tanggal = dateInput.text;
+                  final String judul = judulController.text;
+                  final String jenis = jenisCatatan;
+                  final String deskripsi = deskripsiController.text;
+                  final double? nominal =
+                      double.tryParse(nominalController.text);
+                  await FirebaseFirestore.instance
+                      .collection('records')
+                      .doc(widget.data.id)
+                      .update({
+                    "judul": judul,
+                    "tanggal": tanggal,
+                    "jenis": jenis,
+                    "deskripsi": deskripsi,
+                    "nominal": nominal,
+                  });
+
+                  judulController.text = '';
+                  setState(() {
+                    dateInput.text = '';
+                  });
+                  judulController.text = '';
+                  deskripsiController.text = '';
+                  nominalController.text = '';
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(12),
                 ),
-                child: const Icon(Icons.add, size: 30),
+                child: const Icon(Icons.edit, size: 30),
               )
             ],
           ),
@@ -100,7 +149,8 @@ class _EditPageState extends State<EditPage> {
 const List<String> list = <String>['Pemasukkan', 'Pengeluaran'];
 
 class DropdownJenisCatatan extends StatefulWidget {
-  const DropdownJenisCatatan({super.key});
+  const DropdownJenisCatatan({super.key, required this.aturJenis});
+  final void Function(String jenis) aturJenis;
 
   @override
   State<DropdownJenisCatatan> createState() => DropdownJenisCatatanState();
@@ -124,6 +174,7 @@ class DropdownJenisCatatanState extends State<DropdownJenisCatatan> {
         setState(() {
           dropdownValue = value!;
         });
+        widget.aturJenis(dropdownValue);
       },
       items: list.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(

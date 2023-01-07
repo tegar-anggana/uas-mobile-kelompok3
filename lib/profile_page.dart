@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 const int itemCount = 20;
@@ -37,6 +38,14 @@ showAlertDialog(BuildContext context) {
       style: TextStyle(color: Colors.red),
     ),
     onPressed: () {
+      FirebaseFirestore.instance
+          .collection('records')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
       Navigator.of(context).pop();
     },
   );

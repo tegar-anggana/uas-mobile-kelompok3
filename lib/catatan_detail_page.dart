@@ -14,9 +14,6 @@ class CatatanDetailPage extends StatefulWidget {
 }
 
 class _CatatanDetailPageState extends State<CatatanDetailPage> {
-  bool isSwitch = false;
-  bool? isCheckbox = false;
-
   @override
   Widget build(BuildContext context) {
     // print(widget.data['judul']);
@@ -30,7 +27,7 @@ class _CatatanDetailPageState extends State<CatatanDetailPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (BuildContext context) {
-                    return const EditPage();
+                    return EditPage(data: widget.data);
                   },
                 ),
               );
@@ -147,8 +144,12 @@ class _CatatanDetailPageState extends State<CatatanDetailPage> {
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 20)),
             ElevatedButton(
-              onPressed: () {
-                showAlertDialog(context);
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection('records')
+                    .doc(widget.data.id)
+                    .delete();
+                Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[400],
@@ -164,39 +165,4 @@ class _CatatanDetailPageState extends State<CatatanDetailPage> {
       ),
     );
   }
-}
-
-showAlertDialog(BuildContext context) {
-  // set up the buttons
-  Widget cancelButton = TextButton(
-    child: const Text("Batal"),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
-  );
-  Widget continueButton = TextButton(
-    child: const Text(
-      "Hapus",
-      style: TextStyle(color: Colors.red),
-    ),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
-  );
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: const Text("Hapus Catatan"),
-    content: const Text("Hapus catatan ini?"),
-    actions: [
-      cancelButton,
-      continueButton,
-    ],
-  );
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
 }

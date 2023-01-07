@@ -19,7 +19,7 @@ class _TambahPageState extends State<TambahPage> {
 
   @override
   void initState() {
-    dateInput.text = ""; // value awal dari text field
+    dateInput.text = ''; // value awal dari text field
     super.initState();
   }
 
@@ -121,6 +121,7 @@ class _TambahPageState extends State<TambahPage> {
                   judulController.text = '';
                   deskripsiController.text = '';
                   nominalController.text = '';
+                  Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(12),
