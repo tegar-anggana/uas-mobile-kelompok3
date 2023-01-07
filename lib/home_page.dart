@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kelompok3/catatan_detail_page.dart';
 import 'package:intl/intl.dart';
 import 'package:kelompok3/currency_format.dart';
+import 'package:kelompok3/database_service.dart';
 
 const int itemCount = 20;
 
@@ -16,7 +17,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final CollectionReference _records =
       FirebaseFirestore.instance.collection('records');
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,34 +40,72 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 15),
                           ),
-                          Text(
-                            "Rp.500.000",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              height: 1.5,
-                              color: Colors.green[700],
-                            ),
-                          ),
+                          StreamBuilder(
+                            stream: _records.snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasData) {
+                                List recordsList = [];
+                                for (var result in snapshot.data!.docs
+                                    .where((e) => e['jenis'] == 'Pemasukkan')) {
+                                  recordsList.add(result.data());
+                                }
+                                int total = 0;
+                                for (var data in recordsList) {
+                                  total = (total + data['nominal']) as int;
+                                }
+                                return Text(
+                                  CurrencyFormat.convertToIdr(total, 0),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    height: 1.5,
+                                    color: Colors.green[700],
+                                  ),
+                                );
+                              } else {
+                                return const Text('');
+                              }
+                            },
+                          )
                         ],
                       ),
                       Column(
-                        children: const [
-                          Text(
+                        children: [
+                          const Text(
                             "Total Pengeluaran",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
                           ),
-                          Text(
-                            "Rp.200.000",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              height: 1.5,
-                              color: Color.fromARGB(255, 225, 99, 9),
-                            ),
+                          StreamBuilder(
+                            stream: _records.snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasData) {
+                                List recordsList = [];
+                                for (var result in snapshot.data!.docs.where(
+                                    (e) => e['jenis'] == 'Pengeluaran')) {
+                                  recordsList.add(result.data());
+                                }
+                                int total = 0;
+                                for (var data in recordsList) {
+                                  total = (total + data['nominal']) as int;
+                                }
+                                return Text(
+                                  CurrencyFormat.convertToIdr(total, 0),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    height: 1.5,
+                                    color: Color.fromARGB(255, 225, 99, 9),
+                                  ),
+                                );
+                              } else {
+                                return const Text('');
+                              }
+                            },
                           ),
                         ],
                       ),
@@ -77,6 +115,7 @@ class _HomePageState extends State<HomePage> {
               )
             ],
           ),
+          const Divider(thickness: 2),
           Expanded(
             child: StreamBuilder(
                 stream: _records.snapshots(),
@@ -89,14 +128,15 @@ class _HomePageState extends State<HomePage> {
                         final DocumentSnapshot documentSnapshot =
                             streamSnapshot.data!.docs[index];
                         return Container(
-                          color: Colors.red[50],
+                          color: (documentSnapshot['jenis'] == 'Pengeluaran')
+                              ? Colors.red[50]
+                              : Colors.green[50],
                           child: ListTile(
                             title: Text(
                                 '${documentSnapshot['judul']} (${CurrencyFormat.convertToIdr(documentSnapshot['nominal'], 0)})'),
                             subtitle: Text(
                               DateFormat("EEEE, d MMMM yyyy", "id_ID")
                                   .format(documentSnapshot['tanggal'].toDate()),
-                              // 'Rp.500.000',
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
