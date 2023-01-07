@@ -111,8 +111,7 @@ class _CatatanDetailPageState extends State<CatatanDetailPage> {
                         style: TextStyle(color: Colors.white, fontSize: 17),
                       ),
                       Text(
-                        DateFormat("EEEE, d MMMM yyyy", "id_ID")
-                            .format(widget.data['tanggal'].toDate()),
+                        widget.data['tanggal'],
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 17,

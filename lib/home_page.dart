@@ -50,15 +50,15 @@ class _HomePageState extends State<HomePage> {
                                     .where((e) => e['jenis'] == 'Pemasukkan')) {
                                   recordsList.add(result.data());
                                 }
-                                int total = 0;
+                                double total = 0;
                                 for (var data in recordsList) {
-                                  total = (total + data['nominal']) as int;
+                                  total = (total + data['nominal']);
                                 }
                                 return Text(
                                   CurrencyFormat.convertToIdr(total, 0),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20,
+                                    fontSize: 17,
                                     height: 1.5,
                                     color: Colors.green[700],
                                   ),
@@ -89,15 +89,15 @@ class _HomePageState extends State<HomePage> {
                                     (e) => e['jenis'] == 'Pengeluaran')) {
                                   recordsList.add(result.data());
                                 }
-                                int total = 0;
+                                double total = 0;
                                 for (var data in recordsList) {
-                                  total = (total + data['nominal']) as int;
+                                  total = (total + data['nominal']);
                                 }
                                 return Text(
                                   CurrencyFormat.convertToIdr(total, 0),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20,
+                                    fontSize: 17,
                                     height: 1.5,
                                     color: Color.fromARGB(255, 225, 99, 9),
                                   ),
@@ -135,8 +135,7 @@ class _HomePageState extends State<HomePage> {
                             title: Text(
                                 '${documentSnapshot['judul']} (${CurrencyFormat.convertToIdr(documentSnapshot['nominal'], 0)})'),
                             subtitle: Text(
-                              DateFormat("EEEE, d MMMM yyyy", "id_ID")
-                                  .format(documentSnapshot['tanggal'].toDate()),
+                              documentSnapshot['tanggal'],
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -156,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                       },
                     );
                   } else {
-                    return const Text('mantap');
+                    return const Text('');
                   }
                 }),
           ),
