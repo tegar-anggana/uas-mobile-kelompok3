@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kelompok3/home_page.dart';
-import 'package:kelompok3/profile_page.dart';
 import 'package:kelompok3/tambah_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -37,18 +36,13 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
-  int currentPage = 0;
-  List<Widget> pages = const [
-    HomePage(),
-    ProfilePage(),
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Money Trackings'),
       ),
-      body: pages[currentPage],
+      body: const HomePage(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // debugPrint('Floating Action Button');
@@ -61,18 +55,6 @@ class _RootPageState extends State<RootPage> {
           );
         },
         child: const Icon(Icons.add),
-      ),
-      bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPage = index;
-          });
-        },
-        selectedIndex: currentPage,
       ),
     );
   }

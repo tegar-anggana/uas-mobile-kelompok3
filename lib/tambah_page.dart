@@ -19,7 +19,8 @@ class _TambahPageState extends State<TambahPage> {
 
   @override
   void initState() {
-    dateInput.text = ''; // value awal dari text field
+    dateInput.text = DateFormat("EEEE, d MMMM yyyy", "id_ID")
+        .format(DateTime.now()); // value awal dari text field
     super.initState();
   }
 
