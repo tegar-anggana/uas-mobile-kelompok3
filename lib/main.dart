@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:kelompok3/home_page.dart';
 import 'package:kelompok3/profile_page.dart';
 import 'package:kelompok3/tambah_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
